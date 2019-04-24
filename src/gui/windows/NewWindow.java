@@ -1,16 +1,20 @@
 package gui.windows;
 
+import game.GameEngine;
 import game.arena.IArena;
 import game.competition.Competition;
 import game.entities.sportsman.Sportsman;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.font.TextAttribute;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class NewWindow extends JFrame implements ActionListener {
-    private static CompetionBuilder builder = CompetitionBuilder.getInstance();
+    //private static CompetionBuilder builder = CompetitionBuilder.getInstance();
     private static ArrayList<Sportsman> sportsmens;
     private static final long serialVersionUID = 1L;
 
@@ -65,153 +69,254 @@ public class NewWindow extends JFrame implements ActionListener {
     public JPanel getControlsPanel() {
         JPanel controlsPanel = new JPanel();
         controlsPanel.setLayout(null);
-        controlsPanel.setPreferredSize(new Dimension(140, arenaLength));
+        controlsPanel.setPreferredSize(new Dimension(200, arenaLength));
+
         JLabel title = new JLabel("BUILD ARENA");
-        /*להוסיף קו תחתון לכותרת*/
-        /*title.setFont(new Font("Monospaced", Font.BOLD, 32));*/
-        ///////////////////
+        title.setForeground(Color.BLUE);
+        Font ft=title.getFont();
+        Map opt = ft.getAttributes();
+        opt.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        title.setFont(ft.deriveFont(opt));
+        title.setLocation(10,10);
+        title.setSize(100,10);
+        controlsPanel.add(title);
+
 
         JLabel len = new JLabel("Arena length");
-        len.setLocation(10, 75);
+        len.setLocation(10, 25);
         len.setSize(100, 10);
         controlsPanel.add(len);
 
         tfArenaLength = new JTextField("" + arenaLength);
-        tfArenaLength.setLocation(10, 95);
-        tfArenaLength.setSize(100, 25);
+        tfArenaLength.setLocation(10, 38);
+        tfArenaLength.setSize(100, 20);
         controlsPanel.add(tfArenaLength);
 
+        //ComboBox Surface
         cmbSurfeces = new JComboBox<>();
         int i = 0;
         /////////////////////////RacingClassesFinder////////////////////////////
-        for (String string : RacingClassesFinder.getInstance().getSurfacesNamesList()) {
+/*        for (String string : RacingClassesFinder.getInstance().getSurfacesNamesList()) {
             cmbSurfeces.addItem(string);
             if (i == 0)
                 cmbSurfeces.setSelectedItem(string);
             i++;
-        }
+        }*/
+
+        JLabel snow_sur = new JLabel("Snow surface");
+        controlsPanel.add(snow_sur);
+        snow_sur.setLocation(10, 65);
+        snow_sur.setSize(100, 10);
+
+        controlsPanel.add(cmbSurfeces);
+        cmbSurfeces.setLocation(10,80);
+        cmbSurfeces.setSize(100,20);
+
+        cmbWeather = new JComboBox<>();
+        i = 0;
+        /////////////////////////RacingClassesFinder////////////////////////////
+/*        for (String string : RacingClassesFinder.getInstance().getSurfacesNamesList()) {
+            cmbSurfeces.addItem(string);
+            if (i == 0)
+                cmbSurfeces.setSelectedItem(string);
+            i++;
+        }*/
 
         if (chosenWeather != null)
-            cmbSurfeces.setSelectedItem(chosenWeather);
+            cmbWeather.setSelectedItem(chosenWeather);
 
-        // controlsPanel.setAlignmentX(0.0f);
-        JLabel l1 = new JLabel("Choose arena:");
-        controlsPanel.add(l1);
-        l1.setLocation(10, 20);
-        l1.setSize(100, 10);
-        controlsPanel.add(cmbSurfeces);
-        cmbSurfeces.setLocation(10, 40);
-        cmbSurfeces.setSize(100, 20);
+        JLabel weather_con = new JLabel("Weather condition");
+        controlsPanel.add(weather_con);
+        weather_con.setLocation(10, 105);
+        weather_con.setSize(150, 10);
 
-
-
-        JLabel l3 = new JLabel("Max racers number:");
-        l3.setLocation(10, 135);
-        l3.setSize(150, 10);
-        controlsPanel.add(l3);
-
-        tfMaxRacers = new JTextField("" + maxRacers);
-        tfMaxRacers.setLocation(10, 155);
-        tfMaxRacers.setSize(100, 25);
-        controlsPanel.add(tfMaxRacers);
+        controlsPanel.add(cmbWeather);
+        cmbWeather.setLocation(10,120);
+        cmbWeather.setSize(100,20);
 
         JButton buildArenaBut = new JButton("Build arena");
-        buildArenaBut.setLocation(10, 195);
+        buildArenaBut.setLocation(10, 145);
         buildArenaBut.setSize(100, 30);
         buildArenaBut.addActionListener(this);
         controlsPanel.add(buildArenaBut);
 
         JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
-        sep.setLocation(0, 240);
+        sep.setLocation(0, 180);
         sep.setSize(150, 10);
         controlsPanel.add(sep);
 
-        cmbRacers = new JComboBox<>();
-        for (String string : RacingClassesFinder.getInstance().getRacersNamesList()) {
+
+        JLabel title1 = new JLabel("CREATE COMPETITION");
+        title1.setForeground(Color.BLUE);
+        Font ft1=title1.getFont();
+        Map opt1 = ft1.getAttributes();
+        opt1.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        title1.setFont(ft1.deriveFont(opt1));
+        title1.setLocation(10,185);
+        title1.setSize(190,10);
+        controlsPanel.add(title1);
+
+        cmbCompetition = new JComboBox<>();
+        /*for (String string : RacingClassesFinder.getInstance().getRacersNamesList()) {
             cmbRacers.addItem(string);
-        }
-        JLabel l4 = new JLabel("Choose racer:");
-        controlsPanel.add(l4);
-        l4.setLocation(10, 260);
-        l4.setSize(100, 10);
+        }*/
 
-        controlsPanel.add(cmbRacers);
-        cmbRacers.setLocation(10, 280);
-        cmbRacers.setSize(100, 20);
+        JLabel choose_competition = new JLabel("Choose competition");
+        controlsPanel.add(choose_competition);
+        choose_competition.setLocation(10, 200);
+        choose_competition.setSize(150, 10);
 
-        JLabel l5 = new JLabel("Choose color:");
-        controlsPanel.add(l5);
-        l5.setLocation(10, 315);
-        l5.setSize(100, 10);
+        controlsPanel.add(cmbCompetition);
+        cmbCompetition.setLocation(10, 215);
+        cmbCompetition.setSize(100, 20);
 
-        colors = new JComboBox<>();
-        colors.addItem("Black");
-        colors.addItem("Green");
-        colors.addItem("Blue");
-        colors.addItem("Red");
-        colors.addItem("Yellow");
-        controlsPanel.add(colors);
-        colors.setLocation(10, 335);
-        colors.setSize(100, 20);
+        JLabel max_comp = new JLabel("Max competitors number");
+        controlsPanel.add(max_comp);
+        max_comp.setLocation(10, 240);
+        max_comp.setSize(210, 10);
 
-        JLabel l6 = new JLabel("Racer name:");
-        l6.setLocation(10, 370);
-        l6.setSize(150, 10);
-        controlsPanel.add(l6);
+        tfMaxCompetitors = new JTextField("" + maxCompetitor);
+        tfMaxCompetitors.setLocation(10, 255);
+        tfMaxCompetitors.setSize(100, 20);
+        controlsPanel.add(tfMaxCompetitors);
 
-        tfRacerName = new JTextField("R");
-        tfRacerName.setLocation(10, 390);
-        tfRacerName.setSize(100, 25);
-        controlsPanel.add(tfRacerName);
 
-        JLabel l7 = new JLabel("Max speed:");
-        l7.setLocation(10, 425);
-        l7.setSize(150, 14);
-        controlsPanel.add(l7);
+        cmbDiscipline = new JComboBox<>();
+        cmbDiscipline.addItem("Slalom");
+        cmbDiscipline.addItem("GiantSlalom");
+        cmbDiscipline.addItem("Downhill");
+        cmbDiscipline.addItem("Freestyle");
 
-        tfMaxSpeed = new JTextField("120");
-        tfMaxSpeed.setLocation(10, 445);
-        tfMaxSpeed.setSize(100, 25);
+        JLabel text_discipline = new JLabel("Discipline");
+        controlsPanel.add(text_discipline);
+        text_discipline.setLocation(10, 285);
+        text_discipline.setSize(100, 10);
+
+        controlsPanel.add(cmbDiscipline);
+        cmbDiscipline.setLocation(10, 300);
+        cmbDiscipline.setSize(100, 20);
+
+        cmbLeague = new JComboBox<>();
+        cmbLeague.addItem("Junior");
+        cmbLeague.addItem("Adule");
+        cmbLeague.addItem("Senior");
+
+        JLabel text_league = new JLabel("League");
+        text_league.setLocation(10, 325);
+        text_league.setSize(150, 10);
+        controlsPanel.add(text_league);
+
+        controlsPanel.add(cmbLeague);
+        cmbLeague.setLocation(10, 340);
+        cmbLeague.setSize(100, 20);
+
+        cmbGender = new JComboBox<>();
+        cmbGender.addItem("Male");
+        cmbGender.addItem("Female");
+
+        JLabel text_gender = new JLabel("Gender");
+        text_gender.setLocation(10, 365);
+        text_gender.setSize(150, 10);
+        controlsPanel.add(text_gender);
+
+        controlsPanel.add(cmbGender);
+        cmbGender.setLocation(10, 380);
+        cmbGender.setSize(100, 20);
+
+        JButton createCompBut = new JButton("Create competition");
+        createCompBut.setLocation(10, 405);
+        createCompBut.setSize(150, 20);
+        createCompBut.addActionListener(this);
+        controlsPanel.add(createCompBut);
+
+        JSeparator sep1 = new JSeparator(SwingConstants.HORIZONTAL);
+        sep1.setLocation(0, 435);
+        sep1.setSize(150, 10);
+        controlsPanel.add(sep1);
+
+
+        JLabel title2 = new JLabel("ADD COMPETITOR");
+        title2.setForeground(Color.BLUE);
+        Font ft2=title2.getFont();
+        Map opt2 = ft2.getAttributes();
+        opt2.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        title2.setFont(ft2.deriveFont(opt2));
+        title2.setLocation(10,440);
+        title2.setSize(190,10);
+        controlsPanel.add(title2);
+
+        JLabel text_name = new JLabel("Name");
+        controlsPanel.add(text_name);
+        text_name.setLocation(10, 455);
+        text_name.setSize(210, 10);
+
+        tfCompetitorName = new JTextField("");
+        tfCompetitorName.setLocation(10, 470);
+        tfCompetitorName.setSize(100, 20);
+        controlsPanel.add(tfCompetitorName);
+
+
+        JLabel text_age = new JLabel("Age");
+        controlsPanel.add(text_age);
+        text_age.setLocation(10, 495);
+        text_age.setSize(210, 10);
+        controlsPanel.add(text_age);
+
+        tfCompetitorAge = new JTextField("");
+        tfCompetitorAge.setLocation(10, 510);
+        tfCompetitorAge.setSize(100, 20);
+        controlsPanel.add(tfCompetitorAge);
+
+        JLabel text_maxSpeed = new JLabel("Max speed");
+        controlsPanel.add(text_maxSpeed);
+        text_maxSpeed.setLocation(10, 535);
+        text_maxSpeed.setSize(210, 10);
+        controlsPanel.add(text_maxSpeed);
+
+        tfMaxSpeed = new JTextField("");
+        tfMaxSpeed.setLocation(10, 550);
+        tfMaxSpeed.setSize(100, 20);
         controlsPanel.add(tfMaxSpeed);
 
-        JLabel l8 = new JLabel("Acceleration:");
-        l8.setLocation(10, 485);
-        l8.setSize(150, 10);
-        controlsPanel.add(l8);
+        JLabel text_acceleration = new JLabel("Acceleration");
+        controlsPanel.add(text_acceleration);
+        text_acceleration.setLocation(10, 575);
+        text_acceleration.setSize(210, 10);
+        controlsPanel.add(text_acceleration);
 
-        tfAcceleration = new JTextField("15");
-        tfAcceleration.setLocation(10, 505);
-        tfAcceleration.setSize(100, 25);
+        tfAcceleration = new JTextField("");
+        tfAcceleration.setLocation(10, 590);
+        tfAcceleration.setSize(100, 20);
         controlsPanel.add(tfAcceleration);
 
-        JButton addRacerBut = new JButton("Add racer");
-        addRacerBut.setLocation(10, 545);
-        addRacerBut.setSize(100, 30);
-        addRacerBut.addActionListener(this);
-        controlsPanel.add(addRacerBut);
+        JButton addCompetitorBut = new JButton("Add competitor");
+        addCompetitorBut.setLocation(10, 615);
+        addCompetitorBut.setSize(150, 20);
+        addCompetitorBut.addActionListener(this);
+        controlsPanel.add(addCompetitorBut);
 
         JSeparator sep2 = new JSeparator(SwingConstants.HORIZONTAL);
-        sep2.setLocation(0, 590);
+        sep2.setLocation(0, 640);
         sep2.setSize(150, 10);
         controlsPanel.add(sep2);
 
-        JButton startRaceBut = new JButton("Srart race");
-        startRaceBut.setLocation(10, 605);
-        startRaceBut.setSize(100, 30);
-        startRaceBut.addActionListener(this);
-        controlsPanel.add(startRaceBut);
+        JButton startCompetitionBut = new JButton("Start competition");
+        startCompetitionBut.setLocation(10, 645);
+        startCompetitionBut.setSize(150, 20);
+        startCompetitionBut.addActionListener(this);
+        controlsPanel.add(startCompetitionBut);
 
-        JButton printInfoBut = new JButton("Show info");
-        printInfoBut.setLocation(10, 650);
-        printInfoBut.setSize(100, 30);
-        printInfoBut.addActionListener(this);
-        controlsPanel.add(printInfoBut);
+        JButton showInfoBut = new JButton("Show info");
+        showInfoBut.setLocation(10,670);
+        showInfoBut.setSize(150, 20);
+        showInfoBut.addActionListener(this);
+        controlsPanel.add(showInfoBut);
 
         return controlsPanel;
     }
 
 
-    private JPanel getArenaPanel() {
+    public JPanel getArenaPanel() {
         JPanel arenaPanel = new JPanel();
         arenaPanel.setLayout(null);
         arenaPanel.setPreferredSize(new Dimension(arenaWidth + 80, arenaLength));
@@ -231,5 +336,10 @@ public class NewWindow extends JFrame implements ActionListener {
         }
 
         return arenaPanel;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
     }
 }
