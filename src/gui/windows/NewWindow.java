@@ -65,11 +65,26 @@ public class NewWindow extends JFrame implements ActionListener {
     public JPanel getControlsPanel() {
         JPanel controlsPanel = new JPanel();
         controlsPanel.setLayout(null);
-        controlsPanel.setPreferredSize(new Dimension(140, arenaHeight));
+        controlsPanel.setPreferredSize(new Dimension(140, arenaLength));
+        JLabel title = new JLabel("BUILD ARENA");
+        /*להוסיף קו תחתון לכותרת*/
+        /*title.setFont(new Font("Monospaced", Font.BOLD, 32));*/
+        ///////////////////
+
+        JLabel len = new JLabel("Arena length");
+        len.setLocation(10, 75);
+        len.setSize(100, 10);
+        controlsPanel.add(len);
+
+        tfArenaLength = new JTextField("" + arenaLength);
+        tfArenaLength.setLocation(10, 95);
+        tfArenaLength.setSize(100, 25);
+        controlsPanel.add(tfArenaLength);
 
         cmbSurfeces = new JComboBox<>();
         int i = 0;
-        for (String string : RacingClassesFinder.getInstance().getArenasNamesList()) {
+        /////////////////////////RacingClassesFinder////////////////////////////
+        for (String string : RacingClassesFinder.getInstance().getSurfacesNamesList()) {
             cmbSurfeces.addItem(string);
             if (i == 0)
                 cmbSurfeces.setSelectedItem(string);
@@ -88,15 +103,7 @@ public class NewWindow extends JFrame implements ActionListener {
         cmbSurfeces.setLocation(10, 40);
         cmbSurfeces.setSize(100, 20);
 
-        JLabel l2 = new JLabel("Arena length:");
-        l2.setLocation(10, 75);
-        l2.setSize(100, 10);
-        controlsPanel.add(l2);
 
-        tfArenaLength = new JTextField("" + arenaLength);
-        tfArenaLength.setLocation(10, 95);
-        tfArenaLength.setSize(100, 25);
-        controlsPanel.add(tfArenaLength);
 
         JLabel l3 = new JLabel("Max racers number:");
         l3.setLocation(10, 135);
