@@ -3,7 +3,9 @@ package gui.windows;
 import game.GameEngine;
 import game.arena.IArena;
 import game.competition.Competition;
+import game.competition.WinterCompetition;
 import game.entities.sportsman.Sportsman;
+import game.enums.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.Map;
+
+import static game.enums.SnowSurface.*;
 
 public class NewWindow extends JFrame implements ActionListener {
     //private static CompetionBuilder builder = CompetitionBuilder.getInstance();
@@ -37,6 +41,7 @@ public class NewWindow extends JFrame implements ActionListener {
     private int arenaWidth = 1000;
 
     private String chosenWeather = null;
+    private String chosenSurface = null;
     private IArena arena = null;
     private int competitorsNumber = 0;
     private ImageIcon competitorsImages[] = null;
@@ -94,14 +99,9 @@ public class NewWindow extends JFrame implements ActionListener {
 
         //ComboBox Surface
         cmbSurfeces = new JComboBox<>();
-        int i = 0;
-        /////////////////////////RacingClassesFinder////////////////////////////
-/*        for (String string : RacingClassesFinder.getInstance().getSurfacesNamesList()) {
-            cmbSurfeces.addItem(string);
-            if (i == 0)
-                cmbSurfeces.setSelectedItem(string);
-            i++;
-        }*/
+        for (SnowSurface string : SnowSurface.values()) {
+            cmbSurfeces.addItem(convert(string.toString()));
+        }
 
         JLabel snow_sur = new JLabel("Snow surface");
         controlsPanel.add(snow_sur);
@@ -113,17 +113,10 @@ public class NewWindow extends JFrame implements ActionListener {
         cmbSurfeces.setSize(100,20);
 
         cmbWeather = new JComboBox<>();
-        i = 0;
-        /////////////////////////RacingClassesFinder////////////////////////////
-/*        for (String string : RacingClassesFinder.getInstance().getSurfacesNamesList()) {
-            cmbSurfeces.addItem(string);
-            if (i == 0)
-                cmbSurfeces.setSelectedItem(string);
-            i++;
-        }*/
 
-        if (chosenWeather != null)
-            cmbWeather.setSelectedItem(chosenWeather);
+        for (WeatherCondition string : WeatherCondition.values()) {
+            cmbWeather.addItem(convert(string.toString()));
+        }
 
         JLabel weather_con = new JLabel("Weather condition");
         controlsPanel.add(weather_con);
@@ -157,9 +150,9 @@ public class NewWindow extends JFrame implements ActionListener {
         controlsPanel.add(title1);
 
         cmbCompetition = new JComboBox<>();
-        /*for (String string : RacingClassesFinder.getInstance().getRacersNamesList()) {
-            cmbRacers.addItem(string);
-        }*/
+        cmbCompetition.addItem("Ski");
+        cmbCompetition.addItem("Snowboard");
+
 
         JLabel choose_competition = new JLabel("Choose competition");
         controlsPanel.add(choose_competition);
@@ -182,10 +175,9 @@ public class NewWindow extends JFrame implements ActionListener {
 
 
         cmbDiscipline = new JComboBox<>();
-        cmbDiscipline.addItem("Slalom");
-        cmbDiscipline.addItem("GiantSlalom");
-        cmbDiscipline.addItem("Downhill");
-        cmbDiscipline.addItem("Freestyle");
+        for (Discipline string : Discipline.values()) {
+            cmbDiscipline.addItem(convert(string.toString()));
+        }
 
         JLabel text_discipline = new JLabel("Discipline");
         controlsPanel.add(text_discipline);
@@ -197,9 +189,9 @@ public class NewWindow extends JFrame implements ActionListener {
         cmbDiscipline.setSize(100, 20);
 
         cmbLeague = new JComboBox<>();
-        cmbLeague.addItem("Junior");
-        cmbLeague.addItem("Adule");
-        cmbLeague.addItem("Senior");
+        for (League string : League.values()) {
+            cmbLeague.addItem(convert(string.toString()));
+        }
 
         JLabel text_league = new JLabel("League");
         text_league.setLocation(10, 325);
@@ -211,8 +203,9 @@ public class NewWindow extends JFrame implements ActionListener {
         cmbLeague.setSize(100, 20);
 
         cmbGender = new JComboBox<>();
-        cmbGender.addItem("Male");
-        cmbGender.addItem("Female");
+            for (Gender string : Gender.values()) {
+            cmbGender.addItem(convert(string.toString()));
+        }
 
         JLabel text_gender = new JLabel("Gender");
         text_gender.setLocation(10, 365);
@@ -319,12 +312,11 @@ public class NewWindow extends JFrame implements ActionListener {
     public JPanel getArenaPanel() {
         JPanel arenaPanel = new JPanel();
         arenaPanel.setLayout(null);
-        arenaPanel.setPreferredSize(new Dimension(arenaWidth + 80, arenaLength));
-        ImageIcon imageIcon1 = new ImageIcon(new ImageIcon("icons/" + chosenWeather + ".jpg").getImage()
-                .getScaledInstance(arenaWidth + 80, arenaLength, Image.SCALE_DEFAULT));
+        arenaPanel.setPreferredSize(new Dimension(arenaWidth, arenaLength));
+        ImageIcon imageIcon1 = new ImageIcon(new ImageIcon("src\\icons\\" + chosenWeather + ".jpg").getImage().getScaledInstance(arenaWidth + 80, arenaLength, Image.SCALE_DEFAULT));
         JLabel picLabel1 = new JLabel(imageIcon1);
         picLabel1.setLocation(0, 0);
-        picLabel1.setSize(arenaWidth + 80,arenaLength);
+        picLabel1.setSize(arenaWidth,arenaLength);
         arenaPanel.add(picLabel1);
 
         for (int i = 0; i < competitorsNumber; i++) {
@@ -340,6 +332,271 @@ public class NewWindow extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
 
+            case "Build arena":
+                if (competitionStarted && !competitionFinished) {
+                    JOptionPane.showMessageDialog(this, "Competition is started! You can't change arena.");
+                    return;
+                }
+                try {
+                    arenaLength = Integer.parseInt(tfArenaLength.getText());
+                    maxCompetitor = Integer.parseInt(tfMaxCompetitors.getText());
+                    if (arenaLength < 700 || arenaLength > 900 || maxCompetitor <= 1 || maxCompetitor > 10)
+                        throw new Exception();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid input values! Please try again.");
+                    return;
+                }
+
+                chosenSurface = (String) cmbSurfeces.getSelectedItem();
+                chosenWeather = (String) cmbWeather.getSelectedItem();
+
+
+                /*try {
+                    if (chosenWeather.equals("Sunny")) {
+                        arena = builder.buildArena("game.arenas.air.AerialArena", arenaLength, maxRacers);
+                    } else if (chosenArena.equals("Cloudy")) {
+                        arena = builder.buildArena("game.arenas.land.LandArena", arenaLength, maxRacers);
+                    } else if (chosenArena.equals("Stormy")) {
+                        arena = builder.buildArena("game.arenas.naval.NavalArena", arenaLength, maxRacers);
+                    }
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }*/
+                updateFrame();
+                break;
+                /*
+            case "Add racer":
+                int newWidth = (competitorsNumber + 1) * 65;
+                if (newWidth > 700)
+                    this.arenaHeight = newHeight;
+                else
+                    this.arenaHeight = 700;
+                racers = new ArrayList<>();
+                racersImages = new ImageIcon[maxRacers];
+
+                if (raceFinished) {
+                    JOptionPane.showMessageDialog(this, "Race finished! Please build a new arena.");
+                    return;
+                }
+                if (raceStarted) {
+                    JOptionPane.showMessageDialog(this, "Race started! No racers can be added.");
+                    return;
+                }
+                if (arena == null) {
+                    JOptionPane.showMessageDialog(this, "Please build arena first!");
+                    return;
+                }
+                if (racersNumber == maxRacers) {
+                    JOptionPane.showMessageDialog(this, "No more racers can be added!");
+                    return;
+                }
+                String name;
+                double maxSpeed;
+                double acceleration;
+                try {
+                    name = tfRacerName.getText();
+                    maxSpeed = Double.parseDouble(tfMaxSpeed.getText());
+                    acceleration = Double.parseDouble(tfAcceleration.getText());
+                    if (name.isEmpty() || maxSpeed <= 0 || acceleration <= 0)
+                        throw new Exception();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid input values! Please try again.");
+                    return;
+                }
+
+                String racerType = (String) cmbRacers.getSelectedItem();
+
+                String color = (String) colors.getSelectedItem();
+                EnumContainer.Color col = null;
+                if (color.equals("Red"))
+                    col = EnumContainer.Color.RED;
+                else if (color.equals("Black"))
+                    col = EnumContainer.Color.BLACK;
+                else if (color.equals("Green"))
+                    col = EnumContainer.Color.GREEN;
+                else if (color.equals("Blue"))
+                    col = EnumContainer.Color.BLUE;
+                else if (color.equals("Yellow"))
+                    col = EnumContainer.Color.YELLOW;
+
+                String racerClass = null;
+                if (racerType.equals("Helicopter"))
+                    racerClass = "game.racers.air.Helicopter";
+                else if (racerType.equals("Airplane"))
+                    racerClass = "game.racers.air.Airplane";
+                else if (racerType.equals("Car"))
+                    racerClass = "game.racers.land.Car";
+                else if (racerType.equals("Horse"))
+                    racerClass = "game.racers.land.Horse";
+                else if (racerType.equals("Bicycle"))
+                    racerClass = "game.racers.land.Bicycle";
+                else if (racerType.equals("SpeedBoat"))
+                    racerClass = "game.racers.naval.SpeedBoat";
+                else if (racerType.equals("RowBoat"))
+                    racerClass = "game.racers.naval.RowBoat";
+
+                try {
+                    Racer racer = builder.buildRacer(racerClass, name, maxSpeed, acceleration, col);
+                    arena.addRacer(racer);
+                    arena.initRace();
+                    racers.add(racer);
+                } catch (RacerTypeException ex) {
+                    JOptionPane.showMessageDialog(this, "Recer does not fit to arena! Choose another racer.");
+                    return;
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
+
+                racersImages[racersNumber] = new ImageIcon(new ImageIcon("icons/" + racerType + color + ".png").getImage()
+                        .getScaledInstance(70, 70, Image.SCALE_DEFAULT));
+                racersNumber++;
+
+                updateFrame();
+                break;
+
+            case "Srart race":
+                if (arena == null || racersNumber == 0) {
+                    JOptionPane.showMessageDialog(this, "Please build arena first and add racers!");
+                    return;
+                }
+                if (raceFinished) {
+                    JOptionPane.showMessageDialog(this, "Race finished! Please build a new arena and add racers.");
+                    return;
+                }
+                if (raceStarted) {
+                    JOptionPane.showMessageDialog(this, "Race already started!");
+                    return;
+                }
+                try {
+                    raceStarted = true;
+                    (new Thread() {
+                        public void run() {
+                            while (arena.hasActiveRacers()) {
+                                try {
+                                    Thread.sleep(30);
+                                } catch (InterruptedException ex) {
+                                    ex.printStackTrace();
+                                }
+                                updateFrame();
+                            }
+                            updateFrame();
+                            raceFinished = true;
+                        }
+                    }).start();
+                    arena.startRace();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+
+            case "Show info":
+                if (arena == null || racersNumber == 0) {
+                    JOptionPane.showMessageDialog(this, "Please build arena first and add racers!");
+                    return;
+                }
+                String[] columnNames = {"Racer name", "Current speed", "Max speed", "Current X location", "Finished"};
+                String[][] data = new String[racersNumber][5];
+                int i = 0;
+                for (Racer r : arena.getCompleatedRacers()) {
+                    data[i][0] = r.getName();
+                    data[i][1] = "" + r.getCurrentSpeed();
+                    data[i][2] = "" + r.getMaxSpeed();
+                    data[i][3] = "" + r.getLocation().getX();
+                    data[i][4] = "COMP";
+                    i++;
+                }
+
+                for (Racer r : arena.getActiveRacers()) {
+                    data[i][0] = r.getName();
+                    data[i][1] = "" + r.getCurrentSpeed();
+                    data[i][2] = "" + r.getMaxSpeed();
+                    data[i][3] = "" + r.getLocation().getX();
+                    data[i][4] = "ACT";
+                    i++;
+                }
+                for (Racer r : arena.getBrokenRacers()) {
+                    data[i][0] = r.getName();
+                    data[i][1] = "" + r.getCurrentSpeed();
+                    data[i][2] = "" + r.getMaxSpeed();
+                    data[i][3] = "" + r.getLocation().getX();
+                    data[i][4] = "BROK";
+                    i++;
+                }
+                for (Racer r : arena.getDisabledRacers()) {
+                    data[i][0] = r.getName();
+                    data[i][1] = "" + r.getCurrentSpeed();
+                    data[i][2] = "" + r.getMaxSpeed();
+                    data[i][3] = "" + r.getLocation().getX();
+                    data[i][4] = "DIS";
+                    i++;
+                }
+
+                JTable table = new JTable(data, columnNames);
+                table.setPreferredScrollableViewportSize(table.getPreferredSize());
+                JScrollPane scrollPane = new JScrollPane(table);
+
+                JPanel tabPan = new JPanel();
+                // tabPan.setLayout(new GridLayout(1,0));
+                tabPan.add(scrollPane);
+
+                if (infoTable != null)
+                    infoTable.dispose();
+                infoTable = new JFrame("Racers information");
+                infoTable.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                infoTable.setContentPane(tabPan);
+                infoTable.pack();
+                infoTable.setVisible(true);
+
+                break;*/
+        }
+
+
+    }
+    private void updateFrame() {
+        this.setContentPane(getPanel());
+        this.pack();
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - getHeight()) / 2);
+        this.setLocation(x, y);
+        this.setVisible(true);
+    }
+    /**
+     * Help Function Capitalize the first latter in string
+     * @param str input string
+     * @return relevant string with upper case in the first latter
+     */
+    static String convert(String str)
+    {
+
+        // Create a char array of given String
+        char ch[] = str.toCharArray();
+        for (int i = 0; i < str.length(); i++) {
+
+            // If first character of a word is found
+            if (i == 0 && ch[i] != ' ' ||
+                    ch[i] != ' ' && ch[i - 1] == ' ') {
+
+                // If it is in lower-case
+                if (ch[i] >= 'a' && ch[i] <= 'z') {
+
+                    // Convert into Upper-case
+                    ch[i] = (char)(ch[i] - 'a' + 'A');
+                }
+            }
+
+            // If apart from first character
+            // Any one is in Upper-case
+            else if (ch[i] >= 'A' && ch[i] <= 'Z')
+
+                // Convert into Lower-Case
+                ch[i] = (char)(ch[i] + 'a' - 'A');
+        }
+
+        // Convert the char array to equivalent String
+        String st = new String(ch);
+        return st;
     }
 }

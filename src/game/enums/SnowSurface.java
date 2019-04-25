@@ -17,4 +17,5 @@ public enum SnowSurface {
     public double getFriction(){
         return friction;
     }
+
 }
