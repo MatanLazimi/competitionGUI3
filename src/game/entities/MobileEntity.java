@@ -8,6 +8,15 @@ import utilities.Point;
 public class MobileEntity extends Entity implements IMobileEntity{
     private final double maxSpeed;
     private final double acceleration;
+
+    public double getMaxSpeed() {
+        return maxSpeed;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
     private double speed;
 
     /**

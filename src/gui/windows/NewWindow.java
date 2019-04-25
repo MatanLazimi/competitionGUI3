@@ -1,12 +1,7 @@
 package gui.windows;
 
-import game.GameEngine;
 import game.arena.IArena;
 import game.arena.WinterArena;
-import game.competition.Competition;
-import game.competition.Competitor;
-import game.competition.WinterCompetition;
-import game.entities.MobileEntity;
 import game.entities.sportsman.Sportsman;
 import game.enums.*;
 
@@ -17,13 +12,14 @@ import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.Map;
+import java.lang.*;
+
 
 import static game.enums.SnowSurface.*;
 
 public class NewWindow extends JFrame implements ActionListener {
-    //private static CompetionBuilder builder = CompetitionBuilder.getInstance();
+    private static builder competionBuilder = builder.getInstance();
     private static ArrayList<Sportsman> sportsmens;
-    private static final long serialVersionUID = 1L;
 
     private JComboBox<String> cmbSurfeces;
     private JComboBox<String> cmbWeather;
@@ -359,21 +355,15 @@ public class NewWindow extends JFrame implements ActionListener {
                 chosenSurface = (String) cmbSurfeces.getSelectedItem();
                 chosenWeather = (String) cmbWeather.getSelectedItem();
 
+                try {
+                        arena = competionBuilder.buildArena(arenaLength,
+                                SnowSurface.valueOf(chosenSurface.toUpperCase()),
+                                WeatherCondition.valueOf(chosenWeather.toUpperCase()));
 
-                /*try {
-                    if (chosenWeather.equals("Sunny")) {
-                        arena = builder.buildArena("game.arenas.air.AerialArena", arenaLength, maxRacers);
-                    } else if (chosenArena.equals("Cloudy")) {
-                        arena = builder.buildArena("game.arenas.land.LandArena", arenaLength, maxRacers);
-                    } else if (chosenArena.equals("Stormy")) {
-                        arena = builder.buildArena("game.arenas.naval.NavalArena", arenaLength, maxRacers);
-                    }
                 } catch (Exception ex) {
                     System.out.println(ex);
-                }*/
-                ////////////////TEMPORARY////////////////////
-                helpFlag=true;
-                ////////////////////////////////////////////
+                }
+
 
                 competitorsNumber = 0;
                 competitionStarted = competitionFinished = false;
@@ -382,9 +372,7 @@ public class NewWindow extends JFrame implements ActionListener {
                 break;
 
             case "Create competition":
-                //////////////////////////
-                if (!helpFlag) {
-                ///////////////////////
+                if (arena == null) {
                     JOptionPane.showMessageDialog(this, "Please build arena first!");
                     return;
                 }
@@ -399,17 +387,14 @@ public class NewWindow extends JFrame implements ActionListener {
 
                 chosenTypeComp = (String) cmbCompetition.getSelectedItem();
 
-                maxCompetitor=Integer.parseInt(tfMaxCompetitors.getText());
+                maxCompetitor = Integer.parseInt(tfMaxCompetitors.getText());
 
 
                 updateFrame();
                 break;
 
             case "Add competitor":
-                //arena == null
-                    //////////////////////////////////
-                if (!helpFlag || competitorsNumber == 0) {
-                    /////////////////////////////////////
+                if (arena == null || competitorsNumber == 0) {
                     JOptionPane.showMessageDialog(this, "Please build arena first and add Competitors!");
                     return;
                 }
@@ -509,64 +494,39 @@ public class NewWindow extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Please build arena first and add competitors!");
                     return;
                 }
-                String[] columnNames = {"Name", "Speed", "Max speed", "Location", "Finished"};
-                String[][] data = new String[competitorsNumber][5];
-                int i = 0;
-                for (Sportsman c : sportsmens) {
-                    data[i][0] = c.getName();
-                    data[i][1] = "" + c.getCurrentSpeed();
-                    data[i][2] = "" + c.getMaxSpeed();
-                    data[i][3] = "" + c.getLocation().getX();
-                    data[i][4] = String.valueOf(arena.isFinished(c));
-                    i++;
+                    String[] columnNames = {"Name", "Speed", "Max speed", "Location", "Finished"};
+                    String[][] data = new String[competitorsNumber][5];
+                    int i = 0;
+
+                    for (Sportsman c : sportsmens) {
+                        data[i][0] = c.getName();
+                        data[i][1] = "" + c.getSpeed();
+                        data[i][2] = "" + c.getMaxSpeed();
+                        data[i][3] = "" + c.getLocation().getX();
+                        data[i][4] = String.valueOf(arena.isFinished(c));
+                        i++;
+                    }
+
+                    JTable table = new JTable(data, columnNames);
+                    table.setPreferredScrollableViewportSize(table.getPreferredSize());
+                    JScrollPane scrollWindow = new JScrollPane(table);
+
+                    JPanel jpanel_table = new JPanel();
+                    jpanel_table.add(scrollWindow);
+
+                    if (infoTable != null)
+                        infoTable.dispose();
+                    infoTable = new JFrame("Competitors information");
+                    infoTable.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    infoTable.setContentPane(jpanel_table);
+                    infoTable.pack();
+                    infoTable.setVisible(true);
+                    break;
                 }
 
-                for (Racer r : arena.getActiveRacers()) {
-                    data[i][0] = r.getName();
-                    data[i][1] = "" + r.getCurrentSpeed();
-                    data[i][2] = "" + r.getMaxSpeed();
-                    data[i][3] = "" + r.getLocation().getX();
-                    data[i][4] = "ACT";
-                    i++;
-                }
-                for (Racer r : arena.getBrokenRacers()) {
-                    data[i][0] = r.getName();
-                    data[i][1] = "" + r.getCurrentSpeed();
-                    data[i][2] = "" + r.getMaxSpeed();
-                    data[i][3] = "" + r.getLocation().getX();
-                    data[i][4] = "BROK";
-                    i++;
-                }
-                for (Racer r : arena.getDisabledRacers()) {
-                    data[i][0] = r.getName();
-                    data[i][1] = "" + r.getCurrentSpeed();
-                    data[i][2] = "" + r.getMaxSpeed();
-                    data[i][3] = "" + r.getLocation().getX();
-                    data[i][4] = "DIS";
-                    i++;
-                }
 
-                JTable table = new JTable(data, columnNames);
-                table.setPreferredScrollableViewportSize(table.getPreferredSize());
-                JScrollPane scrollPane = new JScrollPane(table);
-
-                JPanel tabPan = new JPanel();
-                // tabPan.setLayout(new GridLayout(1,0));
-                tabPan.add(scrollPane);
-
-                if (infoTable != null)
-                    infoTable.dispose();
-                infoTable = new JFrame("Racers information");
-                infoTable.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                infoTable.setContentPane(tabPan);
-                infoTable.pack();
-                infoTable.setVisible(true);
-
-                break;*/
         }
 
-
-    }
     private void updateFrame() {
         this.setContentPane(getPanel());
         this.pack();
