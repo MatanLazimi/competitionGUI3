@@ -2,8 +2,11 @@ package gui.windows;
 
 import game.GameEngine;
 import game.arena.IArena;
+import game.arena.WinterArena;
 import game.competition.Competition;
+import game.competition.Competitor;
 import game.competition.WinterCompetition;
+import game.entities.MobileEntity;
 import game.entities.sportsman.Sportsman;
 import game.enums.*;
 
@@ -42,12 +45,16 @@ public class NewWindow extends JFrame implements ActionListener {
 
     private String chosenWeather = null;
     private String chosenSurface = null;
+    private String chosenTypeComp = null;
+
     private IArena arena = null;
     private int competitorsNumber = 0;
     private ImageIcon competitorsImages[] = null;
     private JFrame infoTable = null;
     private boolean competitionStarted = false;
     private boolean competitionFinished = false;
+    private boolean helpFlag = false;
+
 
     public NewWindow(){
         super("Competition");
@@ -364,39 +371,68 @@ public class NewWindow extends JFrame implements ActionListener {
                 } catch (Exception ex) {
                     System.out.println(ex);
                 }*/
+                ////////////////TEMPORARY////////////////////
+                helpFlag=true;
+                ////////////////////////////////////////////
+
+                competitorsNumber = 0;
+                competitionStarted = competitionFinished = false;
+
                 updateFrame();
                 break;
-                /*
-            case "Add racer":
-                int newWidth = (competitorsNumber + 1) * 65;
-                if (newWidth > 700)
-                    this.arenaHeight = newHeight;
-                else
-                    this.arenaHeight = 700;
-                racers = new ArrayList<>();
-                racersImages = new ImageIcon[maxRacers];
 
-                if (raceFinished) {
-                    JOptionPane.showMessageDialog(this, "Race finished! Please build a new arena.");
-                    return;
-                }
-                if (raceStarted) {
-                    JOptionPane.showMessageDialog(this, "Race started! No racers can be added.");
-                    return;
-                }
-                if (arena == null) {
+            case "Create competition":
+                //////////////////////////
+                if (!helpFlag) {
+                ///////////////////////
                     JOptionPane.showMessageDialog(this, "Please build arena first!");
                     return;
                 }
-                if (racersNumber == maxRacers) {
-                    JOptionPane.showMessageDialog(this, "No more racers can be added!");
+                if (competitionFinished) {
+                    JOptionPane.showMessageDialog(this, "Competition finished! Please build a new arena.");
                     return;
                 }
+                if (competitionStarted) {
+                    JOptionPane.showMessageDialog(this, "Competition started! No Competitors can be added.");
+                    return;
+                }
+
+                chosenTypeComp = (String) cmbCompetition.getSelectedItem();
+
+                maxCompetitor=Integer.parseInt(tfMaxCompetitors.getText());
+
+
+                updateFrame();
+                break;
+
+            case "Add competitor":
+                //arena == null
+                    //////////////////////////////////
+                if (!helpFlag || competitorsNumber == 0) {
+                    /////////////////////////////////////
+                    JOptionPane.showMessageDialog(this, "Please build arena first and add Competitors!");
+                    return;
+                }
+                if (competitionFinished) {
+                    JOptionPane.showMessageDialog(this, "Competition finished! Please build a new arena and add racers.");
+                    return;
+                }
+                if (competitionStarted) {
+                    JOptionPane.showMessageDialog(this, "Competition already started!");
+                    return;
+                }
+                competitorsNumber++;
+                if (competitorsNumber > maxCompetitor) {
+                    competitorsNumber--;
+                    JOptionPane.showMessageDialog(this, "No more Competitors can be added!");
+                    return;
+                }
+
                 String name;
                 double maxSpeed;
                 double acceleration;
                 try {
-                    name = tfRacerName.getText();
+                    name = tfCompetitorName.getText();
                     maxSpeed = Double.parseDouble(tfMaxSpeed.getText());
                     acceleration = Double.parseDouble(tfAcceleration.getText());
                     if (name.isEmpty() || maxSpeed <= 0 || acceleration <= 0)
@@ -406,20 +442,10 @@ public class NewWindow extends JFrame implements ActionListener {
                     return;
                 }
 
+                /*
                 String racerType = (String) cmbRacers.getSelectedItem();
 
-                String color = (String) colors.getSelectedItem();
-                EnumContainer.Color col = null;
-                if (color.equals("Red"))
-                    col = EnumContainer.Color.RED;
-                else if (color.equals("Black"))
-                    col = EnumContainer.Color.BLACK;
-                else if (color.equals("Green"))
-                    col = EnumContainer.Color.GREEN;
-                else if (color.equals("Blue"))
-                    col = EnumContainer.Color.BLUE;
-                else if (color.equals("Yellow"))
-                    col = EnumContainer.Color.YELLOW;
+
 
                 String racerClass = null;
                 if (racerType.equals("Helicopter"))
@@ -451,25 +477,13 @@ public class NewWindow extends JFrame implements ActionListener {
 
                 racersImages[racersNumber] = new ImageIcon(new ImageIcon("icons/" + racerType + color + ".png").getImage()
                         .getScaledInstance(70, 70, Image.SCALE_DEFAULT));
-                racersNumber++;
+*/
 
-                updateFrame();
                 break;
 
-            case "Srart race":
-                if (arena == null || racersNumber == 0) {
-                    JOptionPane.showMessageDialog(this, "Please build arena first and add racers!");
-                    return;
-                }
-                if (raceFinished) {
-                    JOptionPane.showMessageDialog(this, "Race finished! Please build a new arena and add racers.");
-                    return;
-                }
-                if (raceStarted) {
-                    JOptionPane.showMessageDialog(this, "Race already started!");
-                    return;
-                }
-                try {
+
+            case "Start competition":
+                /*                try {
                     raceStarted = true;
                     (new Thread() {
                         public void run() {
@@ -488,23 +502,22 @@ public class NewWindow extends JFrame implements ActionListener {
                     arena.startRace();
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
-                }
+                }*/
                 break;
-
             case "Show info":
-                if (arena == null || racersNumber == 0) {
-                    JOptionPane.showMessageDialog(this, "Please build arena first and add racers!");
+                if (arena == null || competitorsNumber == 0) {
+                    JOptionPane.showMessageDialog(this, "Please build arena first and add competitors!");
                     return;
                 }
-                String[] columnNames = {"Racer name", "Current speed", "Max speed", "Current X location", "Finished"};
-                String[][] data = new String[racersNumber][5];
+                String[] columnNames = {"Name", "Speed", "Max speed", "Location", "Finished"};
+                String[][] data = new String[competitorsNumber][5];
                 int i = 0;
-                for (Racer r : arena.getCompleatedRacers()) {
-                    data[i][0] = r.getName();
-                    data[i][1] = "" + r.getCurrentSpeed();
-                    data[i][2] = "" + r.getMaxSpeed();
-                    data[i][3] = "" + r.getLocation().getX();
-                    data[i][4] = "COMP";
+                for (Sportsman c : sportsmens) {
+                    data[i][0] = c.getName();
+                    data[i][1] = "" + c.getCurrentSpeed();
+                    data[i][2] = "" + c.getMaxSpeed();
+                    data[i][3] = "" + c.getLocation().getX();
+                    data[i][4] = String.valueOf(arena.isFinished(c));
                     i++;
                 }
 
