@@ -5,6 +5,7 @@ import game.arena.WinterArena;
 import game.competition.Competition;
 import game.competition.SkiCompetition;
 import game.entities.sportsman.Sportsman;
+import game.entities.sportsman.WinterSportsman;
 import game.enums.*;
 
 import javax.swing.*;
@@ -423,7 +424,7 @@ public class NewWindow extends JFrame implements ActionListener {
                 } catch (Exception ex) {
                     System.out.println(ex);
                 }
-
+                competitorsImages=new ImageIcon[maxCompetitor];
                 updateFrame();
                 break;
 
@@ -440,6 +441,7 @@ public class NewWindow extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Competition already started!");
                     return;
                 }
+
                 competitorsNumber++;
                 if (competitorsNumber > maxCompetitor) {
                     competitorsNumber--;
@@ -449,74 +451,66 @@ public class NewWindow extends JFrame implements ActionListener {
 
                 String name=tfCompetitorName.getText();
                 if(name.isEmpty()) {
+                    competitorsNumber--;
                     JOptionPane.showMessageDialog(this, "Empty name not allowed!");
                     return;
                 }
 
-                if(tfCompetitorAge.getText().isEmpty())
-
-                int age= Integer.parseInt(tfCompetitorAge.getText());
-                if(!League.valueOf(chosenLeague.toUpperCase()).isInLeague(age) ) {
+                double age;
+                try{
+                    age= Double.parseDouble(tfCompetitorAge.getText());}
+                catch (NumberFormatException ex1) {
+                    competitorsNumber--;
+                    JOptionPane.showMessageDialog(this, "Invalid age of competitor!");
+                    return;
+                }
+                if(!League.valueOf(chosenLeague.toUpperCase()).isInLeague(age)) {
+                    competitorsNumber--;
                     JOptionPane.showMessageDialog(this, "Invalid age of competitor!");
                     return;
                 }
 
-
-
-
-
-/*                double maxSpeed;
-                double acceleration;
-                try {
-                    name = tfCompetitorName.getText();
-                    maxSpeed = Double.parseDouble(tfMaxSpeed.getText());
-                    acceleration = Double.parseDouble(tfAcceleration.getText());
-                    if (name.isEmpty() || maxSpeed <= 0 || acceleration <= 0)
-                        throw new Exception();
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Invalid input values! Please try again.");
+                double maxSpeed;
+                try{
+                    maxSpeed= Double.parseDouble(tfMaxSpeed.getText());}
+                catch (NumberFormatException ex2) {
+                    competitorsNumber--;
+                    JOptionPane.showMessageDialog(this, "Invalid max speed of competitor!");
                     return;
-                }*/
-
-                /*
-                String racerType = (String) cmbRacers.getSelectedItem();
-
-
-
-                String racerClass = null;
-                if (racerType.equals("Helicopter"))
-                    racerClass = "game.racers.air.Helicopter";
-                else if (racerType.equals("Airplane"))
-                    racerClass = "game.racers.air.Airplane";
-                else if (racerType.equals("Car"))
-                    racerClass = "game.racers.land.Car";
-                else if (racerType.equals("Horse"))
-                    racerClass = "game.racers.land.Horse";
-                else if (racerType.equals("Bicycle"))
-                    racerClass = "game.racers.land.Bicycle";
-                else if (racerType.equals("SpeedBoat"))
-                    racerClass = "game.racers.naval.SpeedBoat";
-                else if (racerType.equals("RowBoat"))
-                    racerClass = "game.racers.naval.RowBoat";
-
-                try {
-                    Racer racer = builder.buildRacer(racerClass, name, maxSpeed, acceleration, col);
-                    arena.addRacer(racer);
-                    arena.initRace();
-                    racers.add(racer);
-                } catch (RacerTypeException ex) {
-                    JOptionPane.showMessageDialog(this, "Recer does not fit to arena! Choose another racer.");
-                    return;
-                } catch (Exception ex) {
-                    System.out.println(ex);
                 }
 
-                racersImages[racersNumber] = new ImageIcon(new ImageIcon("icons/" + racerType + color + ".png").getImage()
+                double acceleration;
+                try{
+                    acceleration= Double.parseDouble(tfAcceleration.getText());}
+                catch (NumberFormatException ex3) {
+                    competitorsNumber--;
+                    JOptionPane.showMessageDialog(this, "Invalid acceleration of competitor!");
+                    return;
+                }
+
+                //////////////////////Getting from Competition Details////////////////////
+                String competitorPath = null;
+                if (chosenTypeComp.equals("Ski"))
+                    competitorPath = "game.entities.sportsman.Skier";
+                else if (chosenTypeComp.equals("Snowboarder"))
+                    competitorPath = "game.entities.sportsman.Snowboarder";
+
+                Gender competitor_gender= Gender.valueOf(chosenGender);
+                Discipline competitor_discipline= Discipline.valueOf(chosenDiscipline);
+                /////////////////////////////////////////////////////////////////////////
+
+                try {
+                    WinterSportsman competitorNew = competionBuilder.buildCompetitor(name, age,competitor_gender,acceleration, maxSpeed, competitor_discipline, competitorPath);
+                    competitorNew.initRace();
+                    competition.addCompetitor(competitorNew);
+                    sportsmens.add(competitorNew);
+                } catch (Exception ex4) {
+                    System.out.println(ex4);
+                }
+                String path_gender=convert(chosenGender);
+                competitorsImages[competitorsNumber-1] = new ImageIcon(new ImageIcon("\\src\\icons\\" + chosenTypeComp + path_gender + ".png").getImage()
                         .getScaledInstance(70, 70, Image.SCALE_DEFAULT));
-*/
-
                 break;
-
 
             case "Start competition":
                 if (arena == null || competition == null || competitorsNumber==0) {
