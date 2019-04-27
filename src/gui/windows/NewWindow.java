@@ -3,7 +3,7 @@ package gui.windows;
 import game.arena.IArena;
 import game.arena.WinterArena;
 import game.competition.Competition;
-import game.competition.WinterCompetition;
+import game.competition.SkiCompetition;
 import game.entities.sportsman.Sportsman;
 import game.enums.*;
 
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class NewWindow extends JFrame implements ActionListener {
     private static builder competionBuilder = builder.getInstance();
-    private static ArrayList<Sportsman> sportsmens;
+    private static ArrayList<Sportsman> sportsmens=new ArrayList<>();
 
     private JComboBox<String> cmbSurfeces;
     private JComboBox<String> cmbWeather;
@@ -57,8 +57,6 @@ public class NewWindow extends JFrame implements ActionListener {
     private JFrame infoTable = null;
     private boolean competitionStarted = false;
     private boolean competitionFinished = false;
-    private boolean helpFlag = false;
-
 
     public NewWindow(){
         super("Competition");
@@ -373,14 +371,17 @@ public class NewWindow extends JFrame implements ActionListener {
 
 
                 competitorsNumber = 0;
+                sportsmens=new ArrayList<>();
                 competitionStarted = competitionFinished = false;
+                if(competition !=null)
+                    competition= null;
 
                 updateFrame();
                 break;
 
             case "Create competition":
                 if (arena == null) {
-                    JOptionPane.showMessageDialog(this, "Please build arena, first!");
+                    JOptionPane.showMessageDialog(this, "Please build arena, and then create competition!");
                     return;
                 }
                 if (competitionFinished) {
@@ -401,7 +402,14 @@ public class NewWindow extends JFrame implements ActionListener {
                 maxCompetitor = Integer.parseInt(tfMaxCompetitors.getText());
                 if (maxCompetitor<1 || maxCompetitor > 20){
                     JOptionPane.showMessageDialog(this, "Invalid Max amount of competitors! (choose 1-20)");
+                    return;
                 }
+                int newWidth = (maxCompetitor + 1) * 60;
+                if (newWidth > 1000)
+                    this.arenaWidth = newWidth;
+                else
+                    this.arenaWidth = 1000;
+
                 chosenDiscipline = (cmbDiscipline.getSelectedItem()+ "").toUpperCase();
                 chosenLeague = (cmbLeague.getSelectedItem()+ "").toUpperCase();
                 chosenGender = (cmbGender.getSelectedItem()+ "").toUpperCase();
@@ -416,18 +424,16 @@ public class NewWindow extends JFrame implements ActionListener {
                     System.out.println(ex);
                 }
 
-
-
                 updateFrame();
                 break;
 
             case "Add competitor":
-                if (arena == null || competitorsNumber == 0) {
-                    JOptionPane.showMessageDialog(this, "Please build arena first and add Competitors!");
+                if (arena == null || competition == null) {
+                    JOptionPane.showMessageDialog(this, "Please build arena, create competition and add competitors!");
                     return;
                 }
                 if (competitionFinished) {
-                    JOptionPane.showMessageDialog(this, "Competition finished! Please build a new arena and add racers.");
+                    JOptionPane.showMessageDialog(this, "Competition finished! Please build a new arena and then add competitors.");
                     return;
                 }
                 if (competitionStarted) {
@@ -441,8 +447,25 @@ public class NewWindow extends JFrame implements ActionListener {
                     return;
                 }
 
-                String name;
-                double maxSpeed;
+                String name=tfCompetitorName.getText();
+                if(name.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Empty name not allowed!");
+                    return;
+                }
+
+                if(tfCompetitorAge.getText().isEmpty())
+
+                int age= Integer.parseInt(tfCompetitorAge.getText());
+                if(!League.valueOf(chosenLeague.toUpperCase()).isInLeague(age) ) {
+                    JOptionPane.showMessageDialog(this, "Invalid age of competitor!");
+                    return;
+                }
+
+
+
+
+
+/*                double maxSpeed;
                 double acceleration;
                 try {
                     name = tfCompetitorName.getText();
@@ -453,7 +476,7 @@ public class NewWindow extends JFrame implements ActionListener {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this, "Invalid input values! Please try again.");
                     return;
-                }
+                }*/
 
                 /*
                 String racerType = (String) cmbRacers.getSelectedItem();
@@ -496,6 +519,10 @@ public class NewWindow extends JFrame implements ActionListener {
 
 
             case "Start competition":
+                if (arena == null || competition == null || competitorsNumber==0) {
+                    JOptionPane.showMessageDialog(this, "Please build arena, create competition and add competitors!");
+                    return;
+                }
                 /*                try {
                     raceStarted = true;
                     (new Thread() {
@@ -518,8 +545,8 @@ public class NewWindow extends JFrame implements ActionListener {
                 }*/
                 break;
             case "Show info":
-                if (arena == null || competitorsNumber == 0) {
-                    JOptionPane.showMessageDialog(this, "Please build arena first and add competitors!");
+                if (arena == null || competition == null || competitorsNumber==0) {
+                    JOptionPane.showMessageDialog(this, "Please build arena, create competition and add competitors!");
                     return;
                 }
                     String[] columnNames = {"Name", "Speed", "Max speed", "Location", "Finished"};
