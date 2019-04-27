@@ -4,8 +4,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import game.arena.WinterArena;
-import game.enums.SnowSurface;
-import game.enums.WeatherCondition;
+import game.competition.SkiCompetition;
+import game.competition.SnowboardCompetition;
+import game.competition.WinterCompetition;
+import game.enums.*;
 
 public class builder {
    private static builder instance;
@@ -33,6 +35,16 @@ public class builder {
        return (WinterArena) this.constructor.newInstance(length, surface, condition);
 
    }
+    public WinterCompetition buildCompetition(WinterArena winterArena, int maxCompetitors,
+                                              Discipline discipline, League league, Gender gender, String typePath)
+            throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        this.classObject = classLoader.loadClass(typePath);
+        this.constructor = classObject.getConstructor(WinterArena.class, int.class, Discipline.class,
+                League.class, Gender.class );
+        return (WinterCompetition) this.constructor.newInstance(winterArena, maxCompetitors,
+                discipline, league, gender);
+    }
 /*
    public Racer buildRacer(String racerType, String name, double maxSpeed, double acceleration,
                            utilities.EnumContainer.Color color)

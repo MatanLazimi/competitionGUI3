@@ -2,6 +2,8 @@ package gui.windows;
 
 import game.arena.IArena;
 import game.arena.WinterArena;
+import game.competition.Competition;
+import game.competition.WinterCompetition;
 import game.entities.sportsman.Sportsman;
 import game.enums.*;
 
@@ -11,11 +13,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.lang.*;
+import java.util.Objects;
 
-
-import static game.enums.SnowSurface.*;
 
 public class NewWindow extends JFrame implements ActionListener {
     private static builder competionBuilder = builder.getInstance();
@@ -42,9 +44,15 @@ public class NewWindow extends JFrame implements ActionListener {
     private String chosenWeather = null;
     private String chosenSurface = null;
     private String chosenTypeComp = null;
+    private String chosenDiscipline = null;
+    private String chosenLeague = null;
+    private String chosenGender = null;
 
     private IArena arena = null;
     private int competitorsNumber = 0;
+
+    private Competition competition = null;
+
     private ImageIcon competitorsImages[] = null;
     private JFrame infoTable = null;
     private boolean competitionStarted = false;
@@ -81,12 +89,12 @@ public class NewWindow extends JFrame implements ActionListener {
 
         JLabel title = new JLabel("BUILD ARENA");
         title.setForeground(Color.BLUE);
-        Font ft=title.getFont();
-        Map opt = ft.getAttributes();
-        opt.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-        title.setFont(ft.deriveFont(opt));
-        title.setLocation(10,10);
+        title.setLocation(10,8);
         title.setSize(100,10);
+        Font ft=title.getFont();
+        Map<TextAttribute, Object> opt = new HashMap<>(ft.getAttributes());
+        opt.put(TextAttribute.UNDERLINE,TextAttribute.UNDERLINE_ON);
+        title.setFont(ft.deriveFont(opt));
         controlsPanel.add(title);
 
 
@@ -234,9 +242,9 @@ public class NewWindow extends JFrame implements ActionListener {
         JLabel title2 = new JLabel("ADD COMPETITOR");
         title2.setForeground(Color.BLUE);
         Font ft2=title2.getFont();
-        Map opt2 = ft2.getAttributes();
-        opt2.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-        title2.setFont(ft2.deriveFont(opt2));
+        Map opt3 = ft2.getAttributes();
+        opt3.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        title2.setFont(ft2.deriveFont(opt3));
         title2.setLocation(10,440);
         title2.setSize(190,10);
         controlsPanel.add(title2);
@@ -344,8 +352,7 @@ public class NewWindow extends JFrame implements ActionListener {
                 }
                 try {
                     arenaLength = Integer.parseInt(tfArenaLength.getText());
-                    maxCompetitor = Integer.parseInt(tfMaxCompetitors.getText());
-                    if (arenaLength < 700 || arenaLength > 900 || maxCompetitor <= 1 || maxCompetitor > 10)
+                    if (arenaLength < 700 || arenaLength > 900 )
                         throw new Exception();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this, "Invalid input values! Please try again.");
@@ -373,7 +380,7 @@ public class NewWindow extends JFrame implements ActionListener {
 
             case "Create competition":
                 if (arena == null) {
-                    JOptionPane.showMessageDialog(this, "Please build arena first!");
+                    JOptionPane.showMessageDialog(this, "Please build arena, first!");
                     return;
                 }
                 if (competitionFinished) {
@@ -386,8 +393,29 @@ public class NewWindow extends JFrame implements ActionListener {
                 }
 
                 chosenTypeComp = (String) cmbCompetition.getSelectedItem();
-
+                String pathType="";
+                if(Objects.equals(chosenTypeComp, "Ski"))
+                    pathType="game.competition.SkiCompetition";
+                else if(Objects.equals(chosenTypeComp, "Snowboard"))
+                    pathType="game.competition.SnowboardCompetition";
                 maxCompetitor = Integer.parseInt(tfMaxCompetitors.getText());
+                if (maxCompetitor<1 || maxCompetitor > 20){
+                    JOptionPane.showMessageDialog(this, "Invalid Max amount of competitors! (choose 1-20)");
+                }
+                chosenDiscipline = (cmbDiscipline.getSelectedItem()+ "").toUpperCase();
+                chosenLeague = (cmbLeague.getSelectedItem()+ "").toUpperCase();
+                chosenGender = (cmbGender.getSelectedItem()+ "").toUpperCase();
+
+                try {
+                     competition = competionBuilder.buildCompetition((WinterArena) arena, maxCompetitor,
+                             Discipline.valueOf(chosenDiscipline.toUpperCase()),
+                            League.valueOf(chosenLeague.toUpperCase()),
+                             Gender.valueOf(chosenGender.toUpperCase()), pathType);
+
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
+
 
 
                 updateFrame();
