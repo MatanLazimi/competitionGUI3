@@ -1,5 +1,6 @@
 package game.entities.sportsman;
 
+import java.util.Observable;
 import game.entities.MobileEntity;
 import game.enums.Gender;
 import utilities.ValidationUtils;
@@ -7,6 +8,9 @@ import utilities.ValidationUtils;
 /**
  * Created by itzhak on 24-Mar-19.
  */
+
+@SuppressWarnings("deprecation")
+
 public class Sportsman extends MobileEntity {
     /**
      * Important note:
@@ -16,6 +20,8 @@ public class Sportsman extends MobileEntity {
     private final String name;
     private final double age;
     private final Gender gender;
+    private String FinishedStatus;
+    private double Friction;
 
     /**
      * Ctor
@@ -33,9 +39,29 @@ public class Sportsman extends MobileEntity {
         this.name = name;
         this.age = age;
         this.gender = gender;
+        this.FinishedStatus ="NO";
+        this.Friction = 0;
     }
 
     //region Getters & setters
+
+    /**
+     *
+     * @return
+     */
+
+    public double getFriction() {
+        return Friction;
+    }
+
+
+    /**
+     *
+     * @param friction
+     */
+    public void setFriction(double friction) {
+        Friction = friction;
+    }
 
     /**
      * @return sportsman's name

@@ -461,12 +461,12 @@ public class NewWindow extends JFrame implements ActionListener {
                     age= Double.parseDouble(tfCompetitorAge.getText());}
                 catch (NumberFormatException ex1) {
                     competitorsNumber--;
-                    JOptionPane.showMessageDialog(this, "Invalid age of competitor!");
+                    JOptionPane.showMessageDialog(this, "Invalid age of competitor555555555!");
                     return;
                 }
                 if(!League.valueOf(chosenLeague.toUpperCase()).isInLeague(age)) {
                     competitorsNumber--;
-                    JOptionPane.showMessageDialog(this, "Invalid age of competitor!");
+                    JOptionPane.showMessageDialog(this, "Invalid age of competito2222222r!");
                     return;
                 }
 
