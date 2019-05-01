@@ -46,4 +46,5 @@ public class WinterCompetition extends Competition {
         return false;
     }
 
+
 }

@@ -11,7 +11,7 @@ import utilities.ValidationUtils;
 
 @SuppressWarnings("deprecation")
 
-public class Sportsman extends MobileEntity {
+public abstract class Sportsman extends MobileEntity {
     /**
      * Important note:
      * Those fields (and more in this project) are currently final due to them not changing in HW2.
@@ -83,5 +83,6 @@ public class Sportsman extends MobileEntity {
     public Gender getGender() {
         return gender;
     }
+
     //endregion
 }

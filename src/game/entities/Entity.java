@@ -44,7 +44,6 @@ public abstract class Entity extends Observable implements Runnable {
         ValidationUtils.assertNotNull(location);
         this.location = location;
     }
-    //endregion
 
-    //maybe we need here only Run method without implement
+
 }

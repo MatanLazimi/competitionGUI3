@@ -19,6 +19,17 @@ public class WinterSportsman extends Sportsman implements Competitor {
      * If in future tasks you will need to change them you could remove the final modifier and add a setter.
      */
     private final Discipline discipline;
+    private int lenArena;
+
+    public int getLenArena() {
+        return lenArena;
+    }
+
+    public String getFinished() {
+        return Finished;
+    }
+
+    private String Finished = "no";
 
     /**
      * Ctor
@@ -35,7 +46,12 @@ public class WinterSportsman extends Sportsman implements Competitor {
         this.discipline = discipline;
     }
     @Override
-    public void initRace() {
+    public void move(double fric) {
+        super.move(fric);
+    }
+    @Override
+    public void initRace(int len) {
+        this.lenArena=len;
         this.setLocation(new Point(0,this.getLocation().getY()));
     }
 
@@ -58,5 +74,22 @@ public class WinterSportsman extends Sportsman implements Competitor {
         return super.getAcceleration()+ League.calcAccelerationBonus(this.getAge());
     }
     //endregion
+
+    @Override
+    public void run() {
+        while (this.getLocation().getY()<(double)this.getLenArena()) {
+            this.move(this.getFriction());
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+        setChanged();
+        this.Finished="Yes";
+        this.notifyObservers("Finished");
+
+    }
 
 }

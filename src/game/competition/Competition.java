@@ -51,8 +51,9 @@ public abstract class Competition implements Observer {
     /**
      * adds a valid competitor to the competition
      * @param competitor competitor to be added
+     * @param arenaLength
      */
-    public void addCompetitor(Competitor competitor){
+    public void addCompetitor(Competitor competitor, int arenaLength){
         ValidationUtils.assertNotNull(competitor);
         if(maxCompetitors <= activeCompetitors.size()){
             throw new IllegalStateException("WinterArena is full max = "+ maxCompetitors);
@@ -60,7 +61,7 @@ public abstract class Competition implements Observer {
         if (isValidCompetitor(competitor)) {
             synchronized (this.activeCompetitors) {
                 ((Sportsman)competitor).setFriction(arena.getFriction());
-                competitor.initRace();
+                competitor.initRace(arenaLength);
                 activeCompetitors.add(competitor);
             }
         }
@@ -100,6 +101,12 @@ public abstract class Competition implements Observer {
      */
     public ArrayList<Competitor> getFinishedCompetitors() {
         return new ArrayList<>(finishedCompetitors);
+    }
+    @Override
+    public void update(Observable o, Object arg) {
+        Competitor comp = (Competitor)o;
+        this.getFinishedCompetitors().add(comp);
+        this.getActiveCompetitors().remove(comp);
     }
 
 }

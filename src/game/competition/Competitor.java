@@ -10,5 +10,5 @@ public interface Competitor extends IMobileEntity {
     /**
      * start the race for this competitor
      */
-    void initRace();
+    void initRace(int len);
 }

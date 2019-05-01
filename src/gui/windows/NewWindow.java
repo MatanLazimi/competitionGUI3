@@ -332,8 +332,10 @@ public class NewWindow extends JFrame implements ActionListener {
         for (int i = 0; i < competitorsNumber; i++) {
             JLabel picLabel2 = new JLabel(competitorsImages[i]);
             int placeY=(int) sportsmens.get(i).getLocation().getY();
-            if(placeY>arenaLength)
-                placeY=arenaLength;
+            if(placeY>arenaLength) {
+                placeY = arenaLength - 70;
+                sportsmens.get(i).notifyObservers();
+            }
             picLabel2.setLocation((int) sportsmens.get(i).getLocation().getX() + (75*i), placeY);
 
             picLabel2.setSize(70, 70);
@@ -464,12 +466,12 @@ public class NewWindow extends JFrame implements ActionListener {
                     age= Double.parseDouble(tfCompetitorAge.getText());}
                 catch (NumberFormatException ex1) {
                     competitorsNumber--;
-                    JOptionPane.showMessageDialog(this, "Invalid age of competitor555555555!");
+                    JOptionPane.showMessageDialog(this, "Invalid age of competitor!");
                     return;
                 }
                 if(!League.valueOf(chosenLeague.toUpperCase()).isInLeague(age)) {
                     competitorsNumber--;
-                    JOptionPane.showMessageDialog(this, "Invalid age of competito2222222r!");
+                    JOptionPane.showMessageDialog(this, "Invalid age of competitor!");
                     return;
                 }
 
@@ -504,8 +506,8 @@ public class NewWindow extends JFrame implements ActionListener {
 
                 try {
                     WinterSportsman competitorNew = competionBuilder.buildCompetitor(name, age,competitor_gender,acceleration, maxSpeed, competitor_discipline, competitorPath);
-                    competitorNew.initRace();
-                    competition.addCompetitor(competitorNew);
+                    competitorNew.initRace(arenaLength);
+                    competition.addCompetitor(competitorNew,arenaLength);
                     sportsmens.add(competitorNew);
                 } catch (Exception ex4) {
                     System.out.println(ex4);
@@ -531,17 +533,20 @@ public class NewWindow extends JFrame implements ActionListener {
                 }
                 try {
                     competitionStarted = true;
-                    (new Thread(() -> {
-                        while (competition.hasActiveCompetitors()) {
-                            try {
-                                Thread.sleep(30);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
+                    (new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while (competition.hasActiveCompetitors()) {
+                                try {
+                                    Thread.sleep(30);
+                                } catch (InterruptedException ex) {
+                                    ex.printStackTrace();
+                                }
+                                NewWindow.this.updateFrame();
                             }
-                            updateFrame();
+                            NewWindow.this.updateFrame();
+                            competitionFinished = true;
                         }
-                        updateFrame();
-                        competitionFinished = true;
                     })).start();
 
                     GameEngine gameEngine =GameEngine.getInstance();
@@ -564,7 +569,7 @@ public class NewWindow extends JFrame implements ActionListener {
                         data[i][1] = "" + c.getSpeed();
                         data[i][2] = "" + c.getMaxSpeed();
                         data[i][3] = "" + c.getLocation().getX();
-                        data[i][4] = String.valueOf(arena.isFinished(c));
+                        data[i][4] = String.valueOf(((WinterSportsman)c).getFinished());
                         i++;
                     }
 

@@ -6,7 +6,7 @@ import utilities.Point;
  * Created by itzhak on 07-Mar-19.
  */
 
-public class MobileEntity extends Entity implements IMobileEntity{
+public abstract class MobileEntity extends Entity implements IMobileEntity{
     private final double maxSpeed;
     private final double acceleration;
 
@@ -59,7 +59,6 @@ public class MobileEntity extends Entity implements IMobileEntity{
     protected double getAcceleration() {
         return acceleration;
     }
-
 
 
 }
