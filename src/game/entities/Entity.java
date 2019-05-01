@@ -1,5 +1,6 @@
 package game.entities;
 
+import java.util.Observable;
 import utilities.Point;
 import utilities.ValidationUtils;
 
@@ -8,7 +9,9 @@ import java.util.Observable;
 /**
  * Created by itzhak on 24-Mar-19.
  */
-public abstract class Entity {
+@SuppressWarnings("deprecation")
+
+public abstract class Entity extends Observable implements Runnable {
     private Point location;
 
     /**
@@ -42,4 +45,6 @@ public abstract class Entity {
         this.location = location;
     }
     //endregion
+
+    //maybe we need here only Run method without implement
 }

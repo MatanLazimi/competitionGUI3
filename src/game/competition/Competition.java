@@ -1,16 +1,19 @@
 package game.competition;
 
 import game.arena.IArena;
+import game.entities.sportsman.Sportsman;
 import utilities.ValidationUtils;
 
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.Observer;
+import java.util.Observable;
 
 /**
  * Created by itzhak on 24-Mar-19.
  */
-public abstract class Competition {
+@SuppressWarnings("deprecation")
+
+public abstract class Competition implements Observer {
     /**
      * Important note:
      * Those fields (and more in this project) are currently final due to them not changing in HW2.
@@ -18,9 +21,7 @@ public abstract class Competition {
      */
     private IArena arena;
 
-    public ArrayList<Competitor> getActiveCompetitors() {
-        return activeCompetitors;
-    }
+
 
     private final ArrayList<Competitor> activeCompetitors;
     private final ArrayList<Competitor> finishedCompetitors;
@@ -37,7 +38,9 @@ public abstract class Competition {
         this.finishedCompetitors = new ArrayList<>();
         this.arena = arena;
     }
-
+    public ArrayList<Competitor> getActiveCompetitors() {
+        return activeCompetitors;
+    }
     /**
      * Validate if a competitor can compete
      * @param competitor contending competitor
@@ -54,9 +57,12 @@ public abstract class Competition {
         if(maxCompetitors <= activeCompetitors.size()){
             throw new IllegalStateException("WinterArena is full max = "+ maxCompetitors);
         }
-        if(isValidCompetitor(competitor)){
-            competitor.initRace();
-            activeCompetitors.add(competitor);
+        if (isValidCompetitor(competitor)) {
+            synchronized (this.activeCompetitors) {
+                ((Sportsman)competitor).setFriction(arena.getFriction());
+                competitor.initRace();
+                activeCompetitors.add(competitor);
+            }
         }
         else{
             throw new IllegalArgumentException("Invalid competitor "+ competitor);
