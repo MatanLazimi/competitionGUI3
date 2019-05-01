@@ -568,7 +568,7 @@ public class NewWindow extends JFrame implements ActionListener {
                         data[i][0] = c.getName();
                         data[i][1] = "" + c.getSpeed();
                         data[i][2] = "" + c.getMaxSpeed();
-                        data[i][3] = "" + c.getLocation().getX();
+                        data[i][3] = "" + c.getLocation().getY();
                         data[i][4] = String.valueOf(((WinterSportsman)c).getFinished());
                         i++;
                     }
