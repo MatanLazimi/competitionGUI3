@@ -31,7 +31,6 @@ public class MobileEntity extends Entity implements IMobileEntity{
         this.maxSpeed = maxSpeed;
     }
 
-    //region IMobileEntity Implementation
 
     /**
      * @see IMobileEntity#move(double)
@@ -39,12 +38,10 @@ public class MobileEntity extends Entity implements IMobileEntity{
     @Override
     public void move(double friction) {
         this.setSpeed(Math.min(this.maxSpeed,this.speed + this.getAcceleration()* (1-friction)));
-        Point newLocation = this.getLocation().offset(this.speed,0);
+        Point newLocation = this.getLocation().offset(0,this.speed);
         this.setLocation(newLocation);
     }
-    //endregion
 
-    //region Setters
 
     /**
      * Note: speed can theoretically be negative
@@ -53,9 +50,7 @@ public class MobileEntity extends Entity implements IMobileEntity{
     private void setSpeed(double speed) {
         this.speed = speed;
     }
-    //endregion
 
-    //region Getters
 
     /**
      * @return the acceleration of the entity
@@ -63,6 +58,7 @@ public class MobileEntity extends Entity implements IMobileEntity{
     protected double getAcceleration() {
         return acceleration;
     }
-    //endregion
+
+
 
 }

@@ -6,6 +6,8 @@ import game.enums.Discipline;
 import game.enums.Gender;
 import game.enums.League;
 
+import java.util.Observable;
+
 /**
  * Created by itzhak on 24-Mar-19.
  */
@@ -43,4 +45,5 @@ public class WinterCompetition extends Competition {
         }
         return false;
     }
+
 }

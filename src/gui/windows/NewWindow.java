@@ -1,9 +1,9 @@
 package gui.windows;
 
+import game.GameEngine;
 import game.arena.IArena;
 import game.arena.WinterArena;
 import game.competition.Competition;
-import game.competition.SkiCompetition;
 import game.entities.sportsman.Sportsman;
 import game.entities.sportsman.WinterSportsman;
 import game.enums.*;
@@ -323,7 +323,7 @@ public class NewWindow extends JFrame implements ActionListener {
         JPanel arenaPanel = new JPanel();
         arenaPanel.setLayout(null);
         arenaPanel.setPreferredSize(new Dimension(arenaWidth, arenaLength));
-        ImageIcon imageIcon1 = new ImageIcon(new ImageIcon("src\\icons\\" + chosenWeather + ".jpg").getImage().getScaledInstance(arenaWidth + 80, arenaLength, Image.SCALE_DEFAULT));
+        ImageIcon imageIcon1 = new ImageIcon(new ImageIcon("src/icons/" + chosenWeather + ".jpg").getImage().getScaledInstance(arenaWidth + 80, arenaLength, Image.SCALE_DEFAULT));
         JLabel picLabel1 = new JLabel(imageIcon1);
         picLabel1.setLocation(0, 0);
         picLabel1.setSize(arenaWidth,arenaLength);
@@ -331,8 +331,11 @@ public class NewWindow extends JFrame implements ActionListener {
 
         for (int i = 0; i < competitorsNumber; i++) {
             JLabel picLabel2 = new JLabel(competitorsImages[i]);
-            picLabel2.setLocation((int) sportsmens.get(i).getLocation().getX() + 5,
-                    (int) sportsmens.get(i).getLocation().getY());
+            int placeY=(int) sportsmens.get(i).getLocation().getY();
+            if(placeY>arenaLength)
+                placeY=arenaLength;
+            picLabel2.setLocation((int) sportsmens.get(i).getLocation().getX() + (75*i), placeY);
+
             picLabel2.setSize(70, 70);
             picLabel1.add(picLabel2);
         }
@@ -405,7 +408,7 @@ public class NewWindow extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Invalid Max amount of competitors! (choose 1-20)");
                     return;
                 }
-                int newWidth = (maxCompetitor + 1) * 60;
+                int newWidth = (maxCompetitor + 1) * 80;
                 if (newWidth > 1000)
                     this.arenaWidth = newWidth;
                 else
@@ -508,8 +511,9 @@ public class NewWindow extends JFrame implements ActionListener {
                     System.out.println(ex4);
                 }
                 String path_gender=convert(chosenGender);
-                competitorsImages[competitorsNumber-1] = new ImageIcon(new ImageIcon("\\src\\icons\\" + chosenTypeComp + path_gender + ".png").getImage()
+                competitorsImages[competitorsNumber-1] = new ImageIcon(new ImageIcon("src/icons/" + chosenTypeComp + path_gender + ".png").getImage()
                         .getScaledInstance(70, 70, Image.SCALE_DEFAULT));
+                updateFrame();
                 break;
 
             case "Start competition":
@@ -517,26 +521,34 @@ public class NewWindow extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Please build arena, create competition and add competitors!");
                     return;
                 }
-                /*                try {
-                    raceStarted = true;
-                    (new Thread() {
-                        public void run() {
-                            while (arena.hasActiveRacers()) {
-                                try {
-                                    Thread.sleep(30);
-                                } catch (InterruptedException ex) {
-                                    ex.printStackTrace();
-                                }
-                                updateFrame();
+                if (competitionStarted) {
+                        JOptionPane.showMessageDialog(this, "Competition finished! Please build a new arena and add competitors.");
+                        return;
+                }
+                if (competitionFinished) {
+                        JOptionPane.showMessageDialog(this, "Competition already started!");
+                        return;
+                }
+                try {
+                    competitionStarted = true;
+                    (new Thread(() -> {
+                        while (competition.hasActiveCompetitors()) {
+                            try {
+                                Thread.sleep(30);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
                             }
                             updateFrame();
-                            raceFinished = true;
                         }
-                    }).start();
-                    arena.startRace();
+                        updateFrame();
+                        competitionFinished = true;
+                    })).start();
+
+                    GameEngine gameEngine =GameEngine.getInstance();
+                    gameEngine.startRace(competition);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
-                }*/
+                }
                 break;
             case "Show info":
                 if (arena == null || competition == null || competitorsNumber==0) {

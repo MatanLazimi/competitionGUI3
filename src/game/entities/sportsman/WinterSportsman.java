@@ -5,6 +5,7 @@ import game.competition.Competitor;
 import game.enums.Discipline;
 import game.enums.Gender;
 import game.enums.League;
+import javafx.beans.Observable;
 import utilities.Point;
 import utilities.ValidationUtils;
 
@@ -57,4 +58,5 @@ public class WinterSportsman extends Sportsman implements Competitor {
         return super.getAcceleration()+ League.calcAccelerationBonus(this.getAge());
     }
     //endregion
+
 }

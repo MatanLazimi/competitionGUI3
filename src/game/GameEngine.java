@@ -5,6 +5,11 @@ import game.competition.Competition;
 import game.competition.Competitor;
 import utilities.ValidationUtils;
 
+import java.util.Observable;
+import java.util.Observer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class GameEngine {
 
 	private static GameEngine instance;
@@ -30,14 +35,17 @@ public class GameEngine {
 	 * This method will play competition turns until finished then print the results.
 	 * @param competition The competition to be run
 	 */
-	public void startRace(Competition competition) {
+	public void startRace(Competition competition) throws InterruptedException {
 		ValidationUtils.assertNotNull(competition);
-		int step;
-		for(step = 0 ; competition.hasActiveCompetitors() ; step++){
-			competition.playTurn();
+		ExecutorService executorService;
+		synchronized (competition.getActiveCompetitors()) {
+			executorService = Executors.newFixedThreadPool(competition.getActiveCompetitors().size());
+			synchronized (this) {
+				for (Competitor competitor : competition.getActiveCompetitors()) {
+					executorService.execute((Runnable) competitor);
+				}
+			}
 		}
-		System.out.println("race finished in " + step + " steps");
-		printResults(competition);
 	}
 
 	/**
@@ -51,5 +59,4 @@ public class GameEngine {
 			place++;
 		}
 	}
-
 }

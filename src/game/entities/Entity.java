@@ -3,6 +3,8 @@ package game.entities;
 import utilities.Point;
 import utilities.ValidationUtils;
 
+import java.util.Observable;
+
 /**
  * Created by itzhak on 24-Mar-19.
  */

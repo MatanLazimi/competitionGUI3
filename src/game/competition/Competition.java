@@ -4,6 +4,8 @@ import game.arena.IArena;
 import utilities.ValidationUtils;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by itzhak on 24-Mar-19.
@@ -15,6 +17,11 @@ public abstract class Competition {
      * If in future tasks you will need to change them you could remove the final modifier and add a setter.
      */
     private IArena arena;
+
+    public ArrayList<Competitor> getActiveCompetitors() {
+        return activeCompetitors;
+    }
+
     private final ArrayList<Competitor> activeCompetitors;
     private final ArrayList<Competitor> finishedCompetitors;
     private final int maxCompetitors;
@@ -70,6 +77,7 @@ public abstract class Competition {
                 }
             }
         }
+
     }
 
     /**
@@ -87,4 +95,5 @@ public abstract class Competition {
     public ArrayList<Competitor> getFinishedCompetitors() {
         return new ArrayList<>(finishedCompetitors);
     }
+
 }
