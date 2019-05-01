@@ -336,7 +336,7 @@ public class NewWindow extends JFrame implements ActionListener {
                 placeY = arenaLength - 70;
                 sportsmens.get(i).notifyObservers();
             }
-            picLabel2.setLocation((int) sportsmens.get(i).getLocation().getX() + (75*i), placeY);
+            picLabel2.setLocation((int) sportsmens.get(i).getLocation().getX() + (74*i), placeY);
 
             picLabel2.setSize(70, 70);
             picLabel1.add(picLabel2);
@@ -410,7 +410,7 @@ public class NewWindow extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Invalid Max amount of competitors! (choose 1-20)");
                     return;
                 }
-                int newWidth = (maxCompetitor + 1) * 80;
+                int newWidth = (maxCompetitor + 1) * 75;
                 if (newWidth > 1000)
                     this.arenaWidth = newWidth;
                 else

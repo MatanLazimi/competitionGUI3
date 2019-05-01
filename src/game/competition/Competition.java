@@ -103,10 +103,12 @@ public abstract class Competition implements Observer {
         return new ArrayList<>(finishedCompetitors);
     }
     @Override
-    public void update(Observable o, Object arg) {
-        Competitor comp = (Competitor)o;
-        this.getFinishedCompetitors().add(comp);
-        this.getActiveCompetitors().remove(comp);
+    public void update (Observable o, Object arg) {
+        synchronized (this) {
+            Competitor comp = (Competitor) o;
+            this.getFinishedCompetitors().add(comp);
+            this.getActiveCompetitors().remove(comp);
+        }
     }
 
 }

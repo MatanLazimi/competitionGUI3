@@ -62,18 +62,3 @@ public class builder {
     }
 
 
-
-/*
-
-   public Racer buildWheeledRacer(String racerType, String name, double maxSpeed, double acceleration, Color color,
-                                  int numOfWheels) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
-           InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-       this.classObject = classLoader.loadClass(racerType);
-       this.constructor = classObject.getConstructor(String.class, double.class, double.class,
-               utilities.EnumContainer.Color.class, int.class);
-       return (Racer) this.constructor.newInstance(name, maxSpeed, acceleration, color, numOfWheels);
-   }
-
-    }
-    */
-
