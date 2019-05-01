@@ -9,12 +9,12 @@ import game.competition.WinterCompetition;
 import game.entities.sportsman.WinterSportsman;
 import game.enums.*;
 
-public class builder {
-    private static builder instance;
+public class builder_singelton {
+    private static builder_singelton instance;
 
-    public static builder getInstance() {
+    public static builder_singelton getInstance() {
         if (instance == null) {
-            instance = new builder();
+            instance = new builder_singelton();
         }
         return instance;
     }
@@ -23,7 +23,7 @@ public class builder {
     private Class<?> classObject;
     private Constructor<?> constructor;
 
-    private builder() {
+    private builder_singelton() {
         classLoader = ClassLoader.getSystemClassLoader();
     }
 

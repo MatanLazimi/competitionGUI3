@@ -21,7 +21,7 @@ import java.util.Objects;
 
 
 public class NewWindow extends JFrame implements ActionListener {
-    private static builder competionBuilder = builder.getInstance();
+    private static builder_singelton competionBuilder = builder_singelton.getInstance();
     private static ArrayList<Sportsman> sportsmens=new ArrayList<>();
 
     private JComboBox<String> cmbSurfeces;
